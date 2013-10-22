@@ -1,10 +1,13 @@
 require 'sequel/adapters/postgres'
+require 'sequel/adapters/shared/redshift'
 
 module Sequel
   module Redshift
     include Postgres
 
     class Database < Postgres::Database
+      include Sequel::Redshift::DatabaseMethods
+
       set_adapter_scheme :redshift
 
       def column_definition_primary_key_sql(sql, column)
