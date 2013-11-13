@@ -1,6 +1,9 @@
 module Sequel
   module Redshift
     module DatabaseMethods
+
+      REDSHIFT_STRING_MAXIMUM_SIZE = 255
+
       # Redshift does not support arrays (type of pg_index.indkey is INT2VECTOR),
       # and because of that we can't determine the primary key - so we set it to false.
       #
@@ -40,6 +43,11 @@ module Sequel
           row[:primary_key] = false
           [m.call(row.delete(:name)), row]
         end
+      end
+
+      # Redshift changes text to varchar with maximum size of 256, and it complains if you will give text column
+      def type_literal_generic_string(column)
+        "#{ column[:fixed] ? 'char' : 'varchar' }(#{ column[:size] || REDSHIFT_STRING_MAXIMUM_SIZE })"
       end
     end
   end
