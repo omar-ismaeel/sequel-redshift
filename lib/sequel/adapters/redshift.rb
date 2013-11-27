@@ -10,6 +10,12 @@ module Sequel
 
       set_adapter_scheme :redshift
 
+      DIST_KEY = ' DISTKEY'.freeze
+      SORT_KEY = ' SORTKEY'.freeze
+
+      # The order of column modifiers to use when defining a column.
+      COLUMN_DEFINITION_ORDER = [:collate, :default, :primary_key, :dist_key, :sort_key, :null, :unique, :auto_increment, :references]
+
       # We need to change these default settings because they correspond to
       # Postgres configuration variables which do not exist in Redshift
       def adapter_initialize
@@ -24,6 +30,20 @@ module Sequel
         result = super
         result << ' IDENTITY' if result
         result
+      end
+
+      # Add DISTKEY SQL fragment to column creation SQL.
+      def column_definition_dist_key_sql(sql, column)
+        if column[:dist_key]
+          sql << DIST_KEY
+        end
+      end
+
+      # Add SORTKEY SQL fragment to column creation SQL.
+      def column_definition_sort_key_sql(sql, column)
+        if column[:sort_key]
+          sql << SORT_KEY
+        end
       end
 
       def serial_primary_key_options
