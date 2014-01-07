@@ -50,6 +50,11 @@ module Sequel
         # redshift doesn't support serial type
         super.merge(serial: false)
       end
+
+      # DROP TABLE IF EXISTS is not supported by Redshift
+      def supports_drop_table_if_exists?
+        false
+      end
     end
 
     class Dataset < Postgres::Dataset
