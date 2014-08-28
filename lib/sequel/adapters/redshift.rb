@@ -60,6 +60,11 @@ module Sequel
     class Dataset < Postgres::Dataset
       Database::DatasetClass = self
 
+      def initialize(*args)
+        super(*args)
+        @opts = @opts.merge(:disable_insert_returning => true).freeze
+      end
+
       def insert_returning_sql(sql)
         sql
       end
