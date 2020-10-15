@@ -57,6 +57,18 @@ module Sequel
       end
     end
 
+    def connect
+      @connection = PG::Connection.connect(@connection_parameters)
+      binding.pry
+      configure_connection
+    rescue ::PG::Error => error
+      if error.message.include?("does not exist")
+        raise ActiveRecord::NoDatabaseError.new(error.message, error)
+      else
+        raise
+      end
+    end
+
     class Dataset < Postgres::Dataset
       Database::DatasetClass = self
 
